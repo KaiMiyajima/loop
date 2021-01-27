@@ -1,35 +1,27 @@
-# coding:UTF-8
-import discord
+import time
+import asyncio
+from discord.ext import commands
 import os
 import traceback
+import discord
 from discord.ext import tasks
-from datetime import datetime, timedelta, timezone
+import asyncio
 
 
-
-# ↓はトークンの自動取得をしようとしてできなかった残骸
+bot = commands.Bot(command_prefix='/')
 token = os.environ['DISCORD_BOT_TOKEN']
+CHANNEL_ID = 803619260349677589  # チャンネルID
 
+
+# 接続に必要なオブジェクトを生成
 client = discord.Client()
 
 
 @client.event
-async def on_message(message):
-    # ユーザが"/date"と入力するのを検知
-    if message.content.startswith("date"):
+async def on_ready():
+    while True:
+        channel = client.get_channel(CHANNEL_ID)
+        await channel.send('時間だよ')
+        await asyncio.sleep(10)
 
-        # 送り主がBotだった場合反応したくないので
-        if client.user != message.author:
-
-            # 現在の時刻を取得して"now"変数に格納
-            JST = timezone(timedelta(hours=+9), 'JST')
-            now = datetime.now(JST).strftime('%H:%M')
-
-            # メッセージを"ms"変数に格納
-            ms = now + "に" + message.author.name + "さんがタイムカードを切りました。"
-
-            # メッセージを出力
-            await message.channel.send(ms)
-
-# Botの起動とDiscordサーバーへの接続
 client.run(token)
